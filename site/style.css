@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300..800&family=JetBrains+Mono:wght@400..700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300..800&family=JetBrains+Mono:wght@400..700&family=Space+Grotesk:wght@500&display=swap");
 /* Colour system matched to lekopien.com */
 :root {
   --bg: #0d1515; --panel: #151d1e; --panel-2: #192122; --line: rgba(0, 240, 255, 0.15); --text: #dce4e5;
@@ -13,8 +13,6 @@ a { color: var(--accent); }
 .wrap { max-width: 980px; margin: 0 auto; padding: 0 16px; }
 header.top { border-bottom: 1px solid var(--line); background: var(--bg); }
 header.top .wrap { display: flex; align-items: center; justify-content: space-between; height: 60px; gap: 12px; }
-.brand { font: 700 15px var(--mono); text-decoration: none; color: var(--text); letter-spacing: .02em; }
-.brand span { color: var(--accent); }
 nav a { color: var(--muted); text-decoration: none; margin-left: 16px; font: 12px var(--mono); text-transform: uppercase; letter-spacing: .08em; }
 nav a:hover { color: var(--accent); }
 .hero { padding: 56px 0 28px; }
@@ -40,3 +38,10 @@ code { font-family: var(--mono); }
 input, textarea, select { font: inherit; color: var(--text); background: #080f10; border: 1px solid var(--line); border-radius: var(--radius); padding: 10px 12px; width: 100%; }
 input:focus, textarea:focus, select:focus { outline: none; border-color: var(--accent); }
 footer { border-top: 1px solid var(--line); color: var(--muted); font: 12px var(--mono); padding: 24px 0 40px; margin-top: 32px; }
+
+/* Pixel Grid logo lockup: mark, then the LEKOPIEN wordmark (Space Grotesk), then the site name. */
+.brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+.brand img { width: 24px; height: 24px; flex: none; display: block; }
+.brand b { font: 500 15px "Space Grotesk", Inter, sans-serif; letter-spacing: .18em; color: var(--text); }
+.brand small { font: 500 11px var(--mono, "JetBrains Mono", monospace); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); border-left: 1px solid var(--line); padding-left: 10px; }
+.brand:hover b { color: var(--accent); }
