@@ -1,0 +1,8 @@
+// Cloudflare Worker (free plan) that serves the showcase site at https://auth.lekopien.com
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "lekopien-auth",
+  "compatibility_date": "2025-09-01",
+  "assets": { "directory": "./site" },
+  "routes": [{ "pattern": "auth.lekopien.com", "custom_domain": true }]
+}

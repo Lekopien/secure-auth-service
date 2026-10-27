@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Secure Auth Service · Lekopien</title>
+  <meta name="description" content="A zero-dependency Node.js auth service: scrypt password hashing, a hand-written HS256 JWT implementation, refresh-token rotation with theft detection, account lockouts and hardened HTTP headers.">
+  <link rel="stylesheet" href="style.css">
+  
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="brand" href="https://lekopien.com">lekopien<span>.</span>auth</a>
+  <nav><a href="#features">Features</a><a href="#demo">Demo</a><a href="#code">Code</a><a href="https://github.com/Lekopien/secure-auth-service">GitHub</a></nav>
+</div></header>
+<main class="wrap">
+  <div class="hero">
+    <span class="tag">Security</span>
+    <h1>Authentication done properly</h1>
+    <p class="lead">A zero-dependency Node.js auth service: scrypt password hashing, a hand-written HS256 JWT implementation, refresh-token rotation with theft detection, account lockouts and hardened HTTP headers.</p>
+    <div class="btns"><a class="btn" href="https://github.com/Lekopien/secure-auth-service">View source</a><a class="btn ghost" href="#code">Run it locally</a></div>
+  </div>
+  <section id="features"><h2>Highlights</h2><div class="grid"><div class="card"><h3>scrypt hashing</h3><p>Per-user random salt, tunable cost stored in the hash string, constant-time comparison.</p></div><div class="card"><h3>JWT from scratch</h3><p>HS256 with node:crypto; algorithm pinned so alg=none and confusion attacks fail.</p></div><div class="card"><h3>Refresh rotation</h3><p>Refresh tokens are single-use, stored hashed, and reuse revokes the whole session family.</p></div><div class="card"><h3>Brute-force defence</h3><p>Lockout after repeated failures with Retry-After; same error for unknown users to stop enumeration.</p></div><div class="card"><h3>Timing-safe</h3><p>Unknown emails still run a real hash comparison, so response time doesn&#x27;t reveal accounts.</p></div><div class="card"><h3>Hardened responses</h3><p>no-store, nosniff, CSP, HSTS, frame denial, body size limits.</p></div></div></section>
+  <section id="demo"><h2>Try it</h2><div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))">
+<div class="card"><h3>Password policy checker</h3><p>The same rules the service enforces, running in your browser. Nothing is sent anywhere.</p>
+<input id="pw" type="password" placeholder="Type a password" autocomplete="new-password" style="margin-top:12px" aria-label="Password">
+<div style="height:8px;background:var(--line);border-radius:99px;margin-top:10px;overflow:hidden"><i id="meter" style="display:block;height:100%;width:0;background:var(--bad);transition:.2s"></i></div>
+<ul id="problems" style="color:var(--muted);font-size:14px;padding-left:18px"></ul></div>
+<div class="card"><h3>JWT signer and verifier</h3><p>HS256 tokens signed with Web Crypto. Edit the token to see tampering get caught.</p>
+<input id="secret" value="demo-secret-demo-secret-demo-secret!" style="margin-top:12px" aria-label="Secret">
+<button class="btn" id="signBtn" style="margin-top:8px">Sign a token for amy@example.com</button>
+<textarea id="tok" rows="4" style="margin-top:8px;font:12px var(--mono)" aria-label="Token"></textarea>
+<pre id="verdict" style="margin-top:8px;white-space:pre-wrap"></pre></div></div></section>
+  <section id="code"><h2>Run it</h2><h3>Run</h3><pre><code>git clone https://github.com/Lekopien/secure-auth-service
+cd secure-auth-service
+JWT_SECRET=$(openssl rand -base64 48) npm start
+npm test</code></pre><h3>Try it</h3><pre><code>curl -s localhost:4000/register -d &#x27;{&quot;email&quot;:&quot;amy@example.com&quot;,&quot;password&quot;:&quot;Correct-Horse-42&quot;}&#x27;
+TOKEN=$(curl -s localhost:4000/login -d &#x27;{&quot;email&quot;:&quot;amy@example.com&quot;,&quot;password&quot;:&quot;Correct-Horse-42&quot;}&#x27; | jq -r .accessToken)
+curl -s localhost:4000/me -H &quot;Authorization: Bearer $TOKEN&quot;</code></pre></section>
+  <section><h2>Stack</h2><div class="chips"><span class="chip">Node.js 20+</span><span class="chip">node:crypto</span><span class="chip">scrypt</span><span class="chip">JWT (HS256)</span><span class="chip">node:test</span><span class="chip">OWASP practices</span></div></section>
+</main>
+<footer><div class="wrap">Built by <a href="https://lekopien.com">Lekopien</a>. Part of the Lekopien project portfolio. <a href="https://github.com/Lekopien/secure-auth-service">Source on GitHub</a>.</div></footer>
+<script>
+const COMMON = new Set(["password","password1","123456","12345678","123456789","qwerty","letmein","welcome","admin","iloveyou","monkey","dragon"]);
+function problems(p){const out=[];if(p.length<10)out.push("use at least 10 characters");if(COMMON.has(p.toLowerCase()))out.push("this password is too common");
+const kinds=[/[a-z]/,/[A-Z]/,/\d/,/[^A-Za-z0-9]/].filter(r=>r.test(p)).length;if(kinds<3)out.push("mix at least three of: lowercase, uppercase, digits, symbols");return out;}
+pw.oninput=()=>{const p=pw.value,list=problems(p);problemsEl.replaceChildren(...(p?list:[]).map(t=>Object.assign(document.createElement("li"),{textContent:t})));
+if(p&&!list.length)problemsEl.replaceChildren(Object.assign(document.createElement("li"),{textContent:"✓ accepted"}));
+const score=p?Math.min(100,(4-Math.min(list.length,3))*25+Math.min(p.length,20)):0;meter.style.width=score+"%";meter.style.background=list.length?"var(--bad)":"var(--ok)";};
+const problemsEl=document.getElementById("problems");
+const enc=new TextEncoder(),b64u=b=>btoa(String.fromCharCode(...new Uint8Array(b))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+const fromB64u=s=>Uint8Array.from(atob(s.replace(/-/g,"+").replace(/_/g,"/")),c=>c.charCodeAt(0));
+const key=()=>crypto.subtle.importKey("raw",enc.encode(secret.value),{name:"HMAC",hash:"SHA-256"},false,["sign","verify"]);
+async function sign(payload){const h=b64u(enc.encode(JSON.stringify({alg:"HS256",typ:"JWT"}))),b=b64u(enc.encode(JSON.stringify(payload)));
+return `${h}.${b}.${b64u(await crypto.subtle.sign("HMAC",await key(),enc.encode(h+"."+b)))}`;}
+async function check(){const parts=tok.value.trim().split(".");try{if(parts.length!==3)throw Error("malformed token");
+const head=JSON.parse(new TextDecoder().decode(fromB64u(parts[0])));if(head.alg!=="HS256")throw Error("unsupported algorithm: "+head.alg);
+const ok=await crypto.subtle.verify("HMAC",await key(),fromB64u(parts[2]),enc.encode(parts[0]+"."+parts[1]));if(!ok)throw Error("bad signature: token was tampered with");
+const claims=JSON.parse(new TextDecoder().decode(fromB64u(parts[1])));if(claims.exp*1000<Date.now())throw Error("token expired");
+verdict.style.color="var(--ok)";verdict.textContent="✓ valid\n"+JSON.stringify(claims,null,2);}catch(e){verdict.style.color="var(--bad)";verdict.textContent="✗ "+e.message;}}
+signBtn.onclick=async()=>{const iat=Math.floor(Date.now()/1000);tok.value=await sign({sub:"u_123",email:"amy@example.com",iat,exp:iat+900});check();};
+tok.oninput=check;secret.oninput=check;
+</script>
+</body>
+</html>

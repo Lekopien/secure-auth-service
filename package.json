@@ -1,0 +1,12 @@
+{
+  "name": "secure-auth-service",
+  "version": "1.0.0",
+  "description": "Authentication service with zero dependencies: scrypt hashing, signed JWTs, refresh-token rotation, lockouts.",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test"
+  },
+  "engines": { "node": ">=20" },
+  "license": "MIT"
+}
