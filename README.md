@@ -53,3 +53,7 @@ Storage is in memory to keep the project self-contained. For production, move us
 ## License
 
 MIT
+
+## Author
+
+Built by **David Lekopien** ([@Lekopien](https://github.com/Lekopien)) · [lekopien.com](https://lekopien.com)
